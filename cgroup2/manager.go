@@ -50,11 +50,12 @@ const (
 var canDelegate bool
 
 type Event struct {
-	Low     uint64
-	High    uint64
-	Max     uint64
-	OOM     uint64
-	OOMKill uint64
+	Low          uint64
+	High         uint64
+	Max          uint64
+	OOM          uint64
+	OOMKill      uint64
+	OOMGroupKill uint64
 }
 
 // Resources for a cgroups v2 unified hierarchy
@@ -632,11 +633,12 @@ func (c *Manager) Stat() (*stats.Metrics, error) {
 	}
 	if len(memoryEvents) > 0 {
 		metrics.MemoryEvents = &stats.MemoryEvents{
-			Low:     memoryEvents["low"],
-			High:    memoryEvents["high"],
-			Max:     memoryEvents["max"],
-			Oom:     memoryEvents["oom"],
-			OomKill: memoryEvents["oom_kill"],
+			Low:          memoryEvents["low"],
+			High:         memoryEvents["high"],
+			Max:          memoryEvents["max"],
+			Oom:          memoryEvents["oom"],
+			OomKill:      memoryEvents["oom_kill"],
+			OomGroupKill: memoryEvents["oom_group_kill"],
 		}
 	}
 	metrics.Io = &stats.IOStat{
@@ -764,11 +766,12 @@ func (c *Manager) waitForEvents(ec chan<- Event, errCh chan<- error) {
 				return
 			}
 			ec <- Event{
-				Low:     out["low"],
-				High:    out["high"],
-				Max:     out["max"],
-				OOM:     out["oom"],
-				OOMKill: out["oom_kill"],
+				Low:          out["low"],
+				High:         out["high"],
+				Max:          out["max"],
+				OOM:          out["oom"],
+				OOMKill:      out["oom_kill"],
+				OOMGroupKill: out["oom_group_kill"],
 			}
 			if c.isCgroupEmpty() {
 				return
